@@ -2,13 +2,13 @@
 
 #
 #
-#   CephFS Docker Swarm Mount Service Setup Script v1.0
+#   CephFS Mount Script v1.0
 #	
 #   Author:
 #	  Armando Galleogs III <personal@armandogallegos.com>
 # 
-#   Thank you family for putting up with my late night
-#   coding sessions!
+#   Thanks to my family who puts up with my late-night 
+#   code sessions!
 # 
 #
 
@@ -25,20 +25,20 @@ apt-get install -y ceph-common
 cephfs_mons=$(ceph mon stat | grep -oP '\b[a-zA-Z0-9]+(?==)' | tr '\n' ',' | sed 's/,$//')
 
 mnt_service='var-lib-docker-volumes.mount'
-mnt_what_path='/docker/volumes'
-mnt_where_path='/var/lib/docker/volumes'
+mnt_what='/'
+mnt_where='/mnt/cephfs'
 cephfs_secret=`ceph-authtool -p /etc/ceph/ceph.client.admin.keyring`
 
-mkdir -p $mnt_where_path
+mkdir -p $mnt_where
 
 echo -e "[Unit]
-Description=Mount CephFS at $mnt_where_path
+Description=Mount CephFS at $mnt_where
 After=network-online.target
 Wants=network-online.target
 
 [Mount]
-What=$cephfs_mons:$mnt_what_path
-Where=$mnt_where_path
+What=$cephfs_mons:$mnt_what
+Where=$mnt_where
 Type=ceph
 Options=name=admin,secret=$cephfs_secret,_netdev
 TimeoutSec=15
