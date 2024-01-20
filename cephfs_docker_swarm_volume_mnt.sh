@@ -17,11 +17,9 @@ if [ `id -u` -ne 0 ]
   exit
 fi
 
-# GET REQUIRED PACKAGES
 apt-get update
 apt-get install -y ceph-common
 
-# PULLS NODE LIST FROM 'CEPH MON STAT'
 cephfs_mons=$(ceph mon stat | grep -oP '\b[a-zA-Z0-9]+(?==)' | tr '\n' ',' | sed 's/,$//')
 
 mnt_service='var-lib-docker-volumes.mount'
