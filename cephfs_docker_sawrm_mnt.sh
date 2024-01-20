@@ -1,16 +1,16 @@
 #!/bin/bash
 
-#################################################################
-#																                                #
-#   CephFS Docker Swarm Mount Service Setup Script v1.0         #
-#																                                #
-#   Author: 													                          #
-#	  Armando Galleogs III <personal@armandogallegos.com> 		    #
-#                                                               #
-#   Thank you family for putting up with my late night          #
-#   coding sessions! 															              #
-#                                                               #
-#################################################################
+#
+#
+#   CephFS Docker Swarm Mount Service Setup Script v1.0
+#	
+#   Author:
+#	  Armando Galleogs III <personal@armandogallegos.com>
+# 
+#   Thank you family for putting up with my late night
+#   coding sessions!
+# 
+#
 
 if [ `id -u` -ne 0 ]
   then echo "root access required, try sudo ./${0##*/}"
@@ -24,27 +24,27 @@ apt-get install -y ceph-common
 # PULLS NODE LIST FROM 'CEPH MON STAT'
 cephfs_mons=$(ceph mon stat | grep -oP '\b[a-zA-Z0-9]+(?==)' | tr '\n' ',' | sed 's/,$//')
 
-cephfs_mnt_service='/etc/systemd/system/var-lib-docker-volumes.mount'
-cephfs_mnt_src_path='/docker/volumes'
-cephfs_mnt_point='/var/lib/docker/volumes'
+mnt_service='var-lib-docker-volumes.mount'
+mnt_what_path='/docker/volumes'
+mnt_where_path='/var/lib/docker/volumes'
 cephfs_secret=`ceph-authtool -p /etc/ceph/ceph.client.admin.keyring`
 
-mkdir -p $cephfs_mnt_point
+mkdir -p $mnt_where_path
 
 echo -e "[Unit]
-Description=Mount CephFS at $cephfs_mnt_point
+Description=Mount CephFS at $mnt_where_path
 After=network-online.target
 Wants=network-online.target
 
 [Mount]
-What=$cephfs_mons:$cephfs_mnt_src_path
-Where=$cephfs_mnt_point
+What=$cephfs_mons:$mnt_what_path
+Where=$mnt_where_path
 Type=ceph
 Options=name=admin,secret=$cephfs_secret,_netdev
 TimeoutSec=15
 
 [Install]
-WantedBy=multi-user.target" > $cephfs_mnt_service
+WantedBy=multi-user.target" > /etc/systemd/system/$mnt_service
 systemctl daemon-reload
-systemctl enable $cephfs_mnt_service
-systemctl status $cephfs_mnt_service
+systemctl enable $mnt_service
+systemctl start $mnt_service
