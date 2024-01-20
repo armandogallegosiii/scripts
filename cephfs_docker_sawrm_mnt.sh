@@ -24,7 +24,7 @@ apt-get install -y ceph-common
 # PULLS NODE LIST FROM 'CEPH MON STAT'
 cephfs_mons=$(ceph mon stat | grep -oP '\b[a-zA-Z0-9]+(?==)' | tr '\n' ',' | sed 's/,$//')
 
-cephfs_mnt_service='/etc/systemd/system/docker-swarm-mnt-cephfs.mount'
+cephfs_mnt_service='/etc/systemd/system/var-lib-docker-volumes.mount'
 cephfs_mnt_src_path='/docker/volumes'
 cephfs_mnt_point='/var/lib/docker/volumes'
 cephfs_secret=`ceph-authtool -p /etc/ceph/ceph.client.admin.keyring`
