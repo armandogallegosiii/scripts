@@ -22,7 +22,7 @@ apt-get install -y ceph-common
 
 cephfs_mons=$(ceph mon stat | grep -oP '\b[a-zA-Z0-9]+(?==)' | tr '\n' ',' | sed 's/,$//')
 
-mnt_service='var-lib-docker-volumes.mount'
+mnt_service='mnt-cephfs.mount'
 mnt_what='/'
 mnt_where='/mnt/cephfs'
 cephfs_secret=`ceph-authtool -p /etc/ceph/ceph.client.admin.keyring`
