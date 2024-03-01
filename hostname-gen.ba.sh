@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # List of common brands to expect
-brands="apple microsoft dell qnap pi"
+brands="apple microsoft dell qnap raspberry"
 
 # Initialize a variable to store the found brand defaulted to node
 found_brand="node"
@@ -14,10 +14,15 @@ for brand in $brands; do
     fi
 done
 
-# Extract the MAC address
+# Try to extract the MAC address associated with eth0
 mac_address=$(dmesg | grep -m 1 'eth0:' | awk '{print $NF}')
 
-# Remove colons from the MAC address
+# If not found, use the fallback pattern 'macaddr'
+if [ -z "$mac_address" ]; then
+    mac_address=$(dmesg | grep 'macaddr' | head -n 1 | awk -F '=' '{print $NF}' | tr -d ':')
+fi
+
+# Remove colons from the MAC address (if not already removed in the fallback case)
 mac_address_simple=$(echo "$mac_address" | tr -d ':')
 
 # Extract the last 6 characters of the MAC address
