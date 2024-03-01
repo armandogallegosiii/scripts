@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # List of common brands to expect
-brands="apple microsoft dell qnap"
+brands="apple microsoft dell qnap pi"
 
 # Initialize a variable to store the found brand defaulted to node
 found_brand="node"
