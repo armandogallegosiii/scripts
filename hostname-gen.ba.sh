@@ -1,28 +1,24 @@
 #!/bin/bash
 
 # List of common brands to expect
-brands="apple microsoft dell qnap raspberry"
+brands="apple microsoft dell qnap pi"
 
 # Initialize a variable to store the found brand defaulted to node
 found_brand="node"
 
-# Loop through the brand names and check if they appear in the dmesg output
+# Loop through the brand names and check if they appear in the system information or naming
 for brand in $brands; do
-    if dmesg | grep -q "$brand"; then
+    if [[ $(hostnamectl | grep -i "$brand") ]]; then
         found_brand=$brand
         break
     fi
 done
 
-# Try to extract the MAC address associated with eth0
-mac_address=$(dmesg | grep -m 1 'eth0:' | awk '{print $NF}')
+# Use the 'ip' command to get the MAC address of the primary Ethernet interface (eth0)
+# Adjust 'eth0' if your primary network interface has a different name
+mac_address=$(ip link show eth0 | awk '/ether/ {print $2}')
 
-# If not found, use the fallback pattern 'macaddr'
-if [ -z "$mac_address" ]; then
-    mac_address=$(dmesg | grep 'macaddr' | head -n 1 | awk -F '=' '{print $NF}' | tr -d ':')
-fi
-
-# Remove colons from the MAC address (if not already removed in the fallback case)
+# Remove colons from the MAC address
 mac_address_simple=$(echo "$mac_address" | tr -d ':')
 
 # Extract the last 6 characters of the MAC address
@@ -42,5 +38,5 @@ if [[ -n "$mac_address_last6" && -n "$found_brand" ]]; then
 
     echo "Hostname set to $hostname"
 else
-    echo "Required information could not be found in dmesg."
+    echo "Required information could not be found."
 fi
